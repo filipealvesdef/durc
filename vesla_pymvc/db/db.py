@@ -2,6 +2,11 @@ from abc import ABC, abstractmethod
 
 
 class DB(ABC):
+    @staticmethod
+    @abstractmethod
+    def init(config):
+        pass
+
     @abstractmethod
     def get(self, id, collection_id):
         # This method returns an entry by the given id from a collection
