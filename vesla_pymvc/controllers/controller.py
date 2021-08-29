@@ -21,6 +21,18 @@ class Controller(ABC):
         return c
 
 
+    @classmethod
+    def load_all(cls, db):
+        models = cls.model_class.load_all(db)
+        ctrls = []
+        for m in models:
+            c = cls()
+            c.model = m
+            c.on_load(**m.to_dict())
+            ctrls.append(c)
+        return ctrls
+
+
     @abstractmethod
     def on_load(self, **data):
         pass
