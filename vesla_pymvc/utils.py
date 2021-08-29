@@ -1,4 +1,5 @@
 from copy import deepcopy
+import re
 
 
 def update_dict_fields(fields, **fields_mapping):
@@ -10,3 +11,8 @@ def update_dict_fields(fields, **fields_mapping):
 
 
 def clone(d): return deepcopy(d)
+
+
+camel_case_pattern = re.compile(r'(?<!^)(?=[A-Z])')
+def camel_to_snake(string):
+    return camel_case_pattern.sub('_', string).lower()
