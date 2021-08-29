@@ -20,6 +20,13 @@ class Model:
         return camel_to_snake(cls.__name__.replace('Model', ''))
 
 
+    @classmethod
+    def clone(cls, name):
+        class cln(cls):
+            pass
+        cln.__name__ = name
+        return cln
+
 
     def __init__(self, db=None, **data):
         self.db = db
