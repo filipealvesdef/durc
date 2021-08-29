@@ -1,5 +1,5 @@
 from cerberus import Validator
-from vesla_pymvc.utils import update_dict_fields, clone
+from vesla_pymvc.utils import update_dict_fields, clone, camel_to_snake
 import uuid
 
 
@@ -11,9 +11,14 @@ class Model:
             'default_setter': lambda _: str(uuid.uuid4())
         }
     }
-    collection = ''
     validation_opts = {}
     children_model_classes = {}
+
+    @classmethod
+    @property
+    def collection(cls):
+        return camel_to_snake(cls.__name__.replace('Model', ''))
+
 
 
     def __init__(self, db=None, **data):
