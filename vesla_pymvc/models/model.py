@@ -9,7 +9,14 @@ class Model:
             'type': 'string',
             'required': True,
             'default_setter': lambda _: str(uuid.uuid4())
-        }
+        },
+        'children': {
+            'type': 'dict',
+            'valuesrules': {
+                'type': 'list',
+                'schema': { 'type': 'string' },
+            },
+        },
     }
     validation_opts = {}
     children_model_classes = {}
@@ -30,8 +37,14 @@ class Model:
 
     def __init__(self, db=None, **data):
         self.db = db
-        self.children_models = {}
+        m_cls = [(k, v['class']) for k, v in self.children_model_classes.items()]
+        self.on_children_classes(m_cls)
         self.set_attrs(**data)
+
+
+    def on_children_classes(self, children_classes):
+        self.children_classes = children_classes
+        self.children_models = dict([(k, []) for k, _ in self.children_classes])
 
 
     def __getattr__(self, k):
@@ -94,22 +107,44 @@ class Model:
         return dict ([(k, v) for k, v in self.attrs.items() if k in self.schema])
 
 
+    def load_children(self):
+        if 'children' not in self.attrs: return
+        for col_id, model_cls in self.children_classes:
+            if col_id not in self.children: continue
+            for id in self.children[col_id]:
+                child_model = model_cls.load(self.db, id)
+                self.append_child(col_id, child_model)
+
+
+    def append_child(self, attr_id, model):
+        if attr_id not in self.children_models:
+            raise Exception('not in children models')
+        self.children_models[attr_id].append(model)
+        if len(self.children_models[attr_id]) == 1:
+            setattr(self, attr_id, model)
+        else:
+            setattr(self, attr_id, self.children_models[attr_id])
+
+
     @classmethod
     def load_from_data(cls, db, **data):
-        m = cls(db, **data)
-        for k, child in cls.children_model_classes.items():
-            child = child['class'].load(db, id=m.id)
-            m.append_child(k, child)
-        return m
+        model = cls(db, **data)
+        model.load_children()
+        return model
+
+
+    def create_children(self):
+        if 'children' not in self.attrs:
+            self.children = {}
+        for col_id, model_cls in self.children_classes:
+            child_model = model_cls.create(self.db)
+            self.append_child(col_id, child_model)
 
 
     @classmethod
     def create_from_data(cls, db, **data):
         m = cls(db, **data)
-        for k, child in cls.children_model_classes.items():
-            attrs = child['attrs'] if 'attrs' in child else {}
-            child = child['class'].create(db, id=m.id, **attrs)
-            m.append_child(k, child)
+        m.create_children()
         return m
 
 
@@ -172,13 +207,6 @@ class Model:
             return True
         except Exception as e:
             raise e
-
-
-    def append_child(self, id, model):
-        if id not in self.children_model_classes:
-            raise Exception('not in children models')
-        self.children_models[id] = model
-        setattr(self, id, model)
 
 
     def to_dict(self, **fields_mapping):
