@@ -163,12 +163,12 @@ class Model:
             raise e
 
 
-    @classmethod
-    def delete(cls, db, id):
+    def delete(self):
         try:
-            db.delete(id, cls.collection)
-            for k, model_cls in cls.children_models_classes.items():
-                model_cls.delete(db, id)
+            self.db.delete(self.id, self.collection)
+            for models in self.children_models.values():
+                for model in models:
+                    model.delete()
             return True
         except Exception as e:
             raise e

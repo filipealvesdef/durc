@@ -43,15 +43,13 @@ class Controller(ABC):
         return c
 
 
-    @classmethod
-    def delete(cls, db, id):
-        c = cls()
-        c.model_class.delete(db, id)
-
-
     def set_model(self, model):
         self.model = model
         self.on_load(**model.to_dict())
+
+
+    def delete(self):
+        self.model.delete()
 
 
     def update(self, **data):
