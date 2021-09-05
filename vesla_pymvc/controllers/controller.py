@@ -16,8 +16,7 @@ class Controller(ABC):
     @classmethod
     def load(cls, db, id):
         c = cls()
-        c.model = c.model_class.load(db, id)
-        c.on_load(**c.model.to_dict())
+        c.set_model(c.model_class.load(db, id))
         return c
 
 
@@ -27,8 +26,7 @@ class Controller(ABC):
         ctrls = []
         for m in models:
             c = cls()
-            c.model = m
-            c.on_load(**m.to_dict())
+            c.set_model(m)
             ctrls.append(c)
         return ctrls
 
@@ -41,7 +39,7 @@ class Controller(ABC):
     @classmethod
     def create(cls, db, **data):
         c = cls()
-        c.model = cls.model_class.create(db, **data)
+        c.set_model(cls.model_class.create(db, **data))
         return c
 
 
@@ -49,6 +47,11 @@ class Controller(ABC):
     def delete(cls, db, id):
         c = cls()
         c.model_class.delete(db, id)
+
+
+    def set_model(self, model):
+        self.model = model
+        self.on_load(**model.to_dict())
 
 
     def update(self, **data):
