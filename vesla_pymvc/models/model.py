@@ -28,6 +28,15 @@ class Model:
 
 
     @classmethod
+    @property
+    def graphql_name(cls):
+        name = cls.__name__.replace('Model', '')
+        if name.endswith('s'):
+            name = name[:-1]
+        return name
+
+
+    @classmethod
     def clone(cls, name):
         class cln(cls):
             pass
@@ -215,3 +224,36 @@ class Model:
             return self.schema_attrs
         except Exception as e:
             print(e)
+
+
+    @staticmethod
+    def graphql_fields(schema):
+        types_map = {
+            'string': 'String',
+            'number': 'Float',
+            'integer': 'Int',
+            'boolean': 'Boolean',
+        }
+        schema_str = ''
+        for k, v in schema.items():
+            if v['type'] in types_map:
+                t = 'ID' if k == 'id' else types_map[v['type']]
+                req = '!' if 'required' in v and v['required'] else ''
+                schema_str += f'    {k}: {t}{req}\n'
+        return schema_str
+
+
+    @classmethod
+    def to_graphql_type(cls, interface=''):
+        interface = f' implements {interface}' if interface else ''
+        schema_str = f'type {cls.graphql_name}{interface} ' + '{\n'
+        schema_str += Model.graphql_fields(cls.schema)
+        for c_id, child in cls.children_model_classes.items():
+            child_cls = child['class']
+            quantity = child['quantity']
+            ob = '[' if quantity == '*' or quantity == '+' else ''
+            cb = ']' if ob else ''
+            req = '!' if quantity == '+' or quantity == '1' else ''
+            schema_str += f'    {c_id}: {ob}{child_cls.graphql_name}{cb}{req}\n'
+        schema_str += '}\n'
+        return schema_str
