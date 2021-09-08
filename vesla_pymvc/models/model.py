@@ -32,6 +32,7 @@ class Model:
         class cln(cls):
             pass
         cln.__name__ = name
+        cln.schema = clone(cls.schema)
         return cln
 
 
