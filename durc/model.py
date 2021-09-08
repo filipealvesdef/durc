@@ -1,5 +1,5 @@
 from cerberus import Validator
-from vesla_pymvc.utils import clone, camel_to_snake
+from .utils import clone, camel_to_snake
 import uuid
 
 
