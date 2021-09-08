@@ -1,5 +1,5 @@
 from cerberus import Validator
-from vesla_pymvc.utils import update_dict_fields, clone, camel_to_snake
+from vesla_pymvc.utils import clone, camel_to_snake
 import uuid
 
 
@@ -219,7 +219,7 @@ class Model:
             raise e
 
 
-    def to_dict(self, **fields_mapping):
+    def to_dict(self):
         try:
             return self.schema_attrs
         except Exception as e:
