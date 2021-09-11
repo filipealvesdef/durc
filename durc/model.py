@@ -37,11 +37,12 @@ class Model:
 
 
     @classmethod
-    def clone(cls, name):
+    def clone(cls, name=''):
         class cln(cls):
             pass
-        cln.__name__ = name
+        cln.__name__ = name if name else cls.__name__
         cln.schema = clone(cls.schema)
+        cln.children_model_classes = clone(cls.children_model_classes)
         return cln
 
 
