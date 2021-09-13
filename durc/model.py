@@ -36,13 +36,16 @@ class Model:
         return name
 
 
-    @classmethod
-    def clone(cls, name=''):
-        class cln(cls):
-            pass
-        cln.__name__ = name if name else cls.__name__
-        cln.schema = clone(cls.schema)
-        cln.children_model_classes = clone(cls.children_model_classes)
+    @staticmethod
+    def extends(*classes, name=''):
+        class cln(*classes):
+            schema = {}
+            children_model_classes = {}
+        for cls in classes:
+            cln.schema |= clone(cls.schema)
+            cln.children_model_classes |= clone(cls.children_model_classes)
+            cln.__name__ = cls.__name__
+        if name: cln.__name__ = name
         return cln
 
 
