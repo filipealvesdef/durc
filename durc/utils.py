@@ -2,6 +2,14 @@ from copy import deepcopy
 import re
 
 
+def get_methods_in(*classes):
+    r = []
+    for cls in classes:
+        methods = [(key, f) for key, f in cls.__dict__.items() if callable(f)]
+        r.extend(methods)
+    return r
+
+
 def update_dict_fields(fields, **fields_mapping):
     updated_fields = dict(fields)
     for k, v in fields.items():
