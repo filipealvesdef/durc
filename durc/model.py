@@ -242,7 +242,9 @@ class Model:
         for k, v in schema.items():
             if v['type'] in types_map:
                 t = 'ID' if k == 'id' else types_map[v['type']]
-                req = '!' if 'required' in v and v['required'] else ''
+                req = ''
+                if ('required' in v and v['required']) or ('default' in v):
+                    req = '!'
                 schema_str += f'    {k}: {t}{req}\n'
         return schema_str
 
