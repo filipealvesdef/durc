@@ -254,7 +254,7 @@ class Model:
         schema_str += Model.graphql_fields(cls.schema)
         for c_id, child in cls.children_model_classes.items():
             child_cls = child['class']
-            quantity = child['quantity']
+            quantity = child['quantity'][0]
             ob = '[' if quantity == '*' or quantity == '+' else ''
             cb = ']' if ob else ''
             req = '!' if quantity == '+' or quantity == '1' else ''
