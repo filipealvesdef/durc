@@ -31,7 +31,6 @@ class Controller(ABC):
         return ctrls
 
 
-    @abstractmethod
     def on_load(self, **data):
         pass
 
