@@ -2,6 +2,14 @@ from copy import deepcopy
 import re
 
 
+def get_base_classes(cls):
+    r = [cls]
+    for b in cls.__bases__:
+        if b.__name__ != 'object':
+            r.extend(get_base_classes(b))
+    return r
+
+
 def get_methods_in(*classes):
     r = []
     for cls in classes:
