@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 setup(
     name='durc',
     description='Hierarchical CRUD utils for python projects',
-    version='3.0.0',
+    version='3.1.0',
     author='Filipe Alves',
     author_email='filipe.alvesdefernando@gmail.com',
     packages=find_packages(),
