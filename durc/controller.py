@@ -35,6 +35,10 @@ class Controller(ABC):
         pass
 
 
+    def after_load(self):
+        pass
+
+
     @classmethod
     def create(cls, db, **data):
         c = cls()
@@ -45,6 +49,7 @@ class Controller(ABC):
     def set_model(self, model):
         self.model = model
         self.on_load(**model.to_dict())
+        self.after_load()
 
 
     def delete(self):
